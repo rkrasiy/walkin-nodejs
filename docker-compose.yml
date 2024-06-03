@@ -1,0 +1,74 @@
+version: "3"
+
+services:
+  schedule-track-proxy:
+    container_name: schedule-track-proxy
+    image: nginx:1.24.0
+    restart: always
+    volumes:
+      - ./proxy/default.conf:/etc/nginx/conf.d/default.conf
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+  schedule-track-frontend:
+    container_name: schedule-track-frontend
+    image: localhost:3000/schedule-track-frontend-local
+    build: 
+      dockerfile: Dockerfile.local
+      context: ./frontend
+    restart: always
+    command:
+      ["ash", "-c", "yarn && yarn dev"]
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+
+
+  schedule-track-backend:
+    container_name: schedule-track-backend
+    image: node:20
+    build: 
+      context: ./backend
+    restart: always
+    command:
+      ["sh", "-c", "npm install && npm start"]
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./.env
+    ports:
+      - "6500:6500"
+
+    
+  schedule-track-database:
+    container_name: st-database
+    image: mongo:4.2.24-bionic
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_ADMIN_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_ADMIN_USERPASS}
+      - MONGO_INITDB_DATABASE=schedule_track
+    volumes:
+      - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - st-database:/data/db
+    ports:
+      - 22017:27017
+
+
+  schedule-track-database_manager:
+    container_name: schedule-track-database_manager
+    image: mongo-express
+    restart: always
+    ports:
+      - 9081:8081
+    environment:
+      - ME_CONFIG_MONGODB_URL=mongodb://${DB_ADMIN_USERNAME}:${DB_ADMIN_USERPASS}@st-database:27017/?authSource=admin
+
+volumes:
+  st-database:
+
+networks:
+  default:
