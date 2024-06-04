@@ -16,7 +16,7 @@ services:
     container_name: schedule-track-frontend
     image: localhost:3000/schedule-track-frontend-local
     build: 
-      dockerfile: Dockerfile.local
+      dockerfile: Dockerfile
       context: ./front-end
     restart: always
     command:
