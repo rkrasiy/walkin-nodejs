@@ -12,18 +12,6 @@ services:
       - "80:80"
       - "443:443"
 
-  schedule-track-frontend:
-    container_name: schedule-track-frontend
-    image: localhost:3000/schedule-track-frontend-local
-    build: 
-      dockerfile: Dockerfile
-      context: ./front-end
-    restart: always
-    command: ["sh", "-c", "yarn install && yarn build && yarn start"]
-    working_dir: /app
-    volumes:
-      - ./front-end:/app
-
   schedule-track-backend:
     container_name: schedule-track-backend
     image: node:20
