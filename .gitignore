@@ -23,19 +23,19 @@ dist-ssr
 *.sln
 *.sw?
 
-./front-end/*.pnp
-./front-end/*.pnp.js
-./front-end.yarn/install-state.gz
+*.pnp
+*.pnp.js
+.yarn/install-state.gz
 
 # testing
 ./front-end/coverage
 
 # next.js
-./front-end/.next/
-./front-end/out/
+*/.next/
+*/out/
 
 # production
-./front-end/build
+build
 
 # misc
 .DS_Store
@@ -52,4 +52,4 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-./front-end/next-env.d.ts
+next-env.d.ts
