@@ -49,7 +49,7 @@ export const updateManagers = async (req:Request, res: Response) => {
 export const newManager = async  (req:Request, res: Response) => {
 
   const { name, email, password, role, phone, surname} = req.body;
-  const user = new managerModel({ name, email, password, role, surname, phone });
+  const user = new managerModel({ name, email, password, role, surname, phone, created_on: (new Date()).toISOString()  });
 
   // Crypt password
   const salt = bcryptjs.genSaltSync();

@@ -4,8 +4,8 @@ FROM node:20.2.0-alpine3.17
 # Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copia el archivo package.json y el yarn.lock (si existe)
-COPY package.json yarn.lock ./
+# Copia el archivo package.json al directorio de trabajo
+COPY package.json ./
 
 # Instala las dependencias del proyecto
 RUN yarn install
@@ -19,5 +19,5 @@ RUN yarn build
 # Exponer el puerto en el que la aplicación estará corriendo
 EXPOSE 3000
 
-# Comando por defecto para ejecutar la aplicación Next.js
+# Comando por defecto para ejecutar la aplicación Next.js en modo producción
 CMD ["yarn", "start"]

@@ -27,7 +27,6 @@ router.post("/", [
 
 router.delete("/:id", [
   validateJWT,
-  // isAdminRole,
   hasPermissions,
   check('id', 'Is not valid id').isMongoId(),
   check('id').custom(isUserIdExist),
