@@ -1,8 +1,23 @@
-# Used for local development
-#
-#   docker build -t localhost:5000/udo-notifier-frontend-local -f Dockerfile.local .
-#   docker run --rm -it --name udo-frontend-local -v `pwd`:/app -p 3000:3000  localhost:5000/udo-notifier-frontend-local ash
-#
+# Usa una imagen base oficial de Node.js
 FROM node:20.2.0-alpine3.17
 
+# Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
+
+# Copia el archivo package.json y el package-lock.json (si existe)
+COPY package*.json ./
+
+# Instala las dependencias del proyecto
+RUN yarn install
+
+# Copia el resto de los archivos de la aplicación al directorio de trabajo del contenedor
+COPY . .
+
+# Construye la aplicación Next.js
+RUN yarn build
+
+# Exponer el puerto en el que la aplicación estará corriendo
+EXPOSE 3000
+
+# Comando por defecto para ejecutar la aplicación Next.js
+CMD ["yarn", "start"]

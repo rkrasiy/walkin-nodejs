@@ -19,12 +19,10 @@ services:
       dockerfile: Dockerfile
       context: ./front-end
     restart: always
-    command:
-      ["ash", "-c", "yarn && yarn dev"]
+    command: ["sh", "-c", "yarn install && yarn build && yarn start"]
     working_dir: /app
     volumes:
-      - ./schedule-track-frontend:/app
-
+      - ./front-end:/app
 
   schedule-track-backend:
     container_name: schedule-track-backend
