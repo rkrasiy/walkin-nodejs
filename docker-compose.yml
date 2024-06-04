@@ -23,7 +23,7 @@ services:
       ["ash", "-c", "yarn && yarn dev"]
     working_dir: /app
     volumes:
-      - ./frontend:/app
+      - ./schedule-track-frontend:/app
 
 
   schedule-track-backend:
