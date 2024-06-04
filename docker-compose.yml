@@ -17,7 +17,7 @@ services:
     image: localhost:3000/schedule-track-frontend-local
     build: 
       dockerfile: Dockerfile.local
-      context: ./frontend
+      context: ./front-end
     restart: always
     command:
       ["ash", "-c", "yarn && yarn dev"]
