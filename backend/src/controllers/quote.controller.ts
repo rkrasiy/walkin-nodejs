@@ -38,9 +38,10 @@ export const updateQuote = async (req:Request, res: Response) => {
 
 export const newQuote = async (req:Request, res: Response) => {
 
-  const { service, user, start, end } = req.body;
-  console.log('HEHRERERE', { service, user, start, end })
-  const quote = new quotesModel({ service, user, start, end, created_on: (new Date()).toISOString() });
+  const { service, fullname, email, phone, receive_notification, start, end } = req.body;
+
+  
+  const quote = new quotesModel({ service, fullname, start, end, created_on: (new Date()).toISOString() });
 
   await quote.save();
   res.status(201).json(quote);

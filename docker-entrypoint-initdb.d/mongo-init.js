@@ -55,10 +55,6 @@ db.createCollection('users', {
           description: 'User full name',
           minLength: 8
         },
-        years_old: {
-          bsonType: 'number',
-          description: 'User oldest'
-        },
         phone: {
           bsonType: 'string',
           description: 'User phone',
