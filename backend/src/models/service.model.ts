@@ -12,20 +12,17 @@ const ServiceSchema = new Schema({
   discount: {
     type: Number,
   },
-  time: {
+  duration: {
     type: Number,
-    required: [true, 'Time is required'],
+    required: [true, 'Duration is required'],
   },
   state: {
     type: Boolean,
     default: true
   },
+  created_on: {
+    type: Date
+  }
 });
-
-ServiceSchema.methods.toJSON = function(){
-  const {__v, password, _id, ...user } = this.toObject();
-  user.uid = _id
-  return user;
-};
 
 export default model('Service', ServiceSchema);

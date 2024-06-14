@@ -8,7 +8,7 @@ export const isAdminRole = ( req: Request, res: Response, next: NextFunction) =>
   }
 
   const { role, name } = req.user;
-  if( role !== 'ADMIN_ROLE'){
+  if( role !== 'admin'){
     return res.status(401).json({
       msg: `${name} doesn't have permissions`
     });
@@ -25,7 +25,7 @@ export const hasPermissions = ( req: Request<{user?: string}>, res: Response, ne
   }
 
   const { role, name } = req.user;
-  if( role !== 'ADMIN_ROLE'){
+  if( role !== 'admin'){
     return res.status(401).json({
       msg: `${name} doesn't have permissions`
     });

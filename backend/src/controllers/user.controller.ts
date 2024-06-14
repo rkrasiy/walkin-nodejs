@@ -38,8 +38,8 @@ export const updateUsers = async (req:Request, res: Response) => {
 
 export const newUser = async  (req:Request, res: Response) => {
 
-  const { full_name, email, phone } = req.body;
-  const user = new userModel({ full_name, email, phone });
+  const { full_name, email, phone, notifications } = req.body;
+  const user = new userModel({ full_name, email, phone, created_on: (new Date()).toISOString(), notifications });
 
   await user.save();
   res.status(201).json(user);

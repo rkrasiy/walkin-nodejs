@@ -55,10 +55,6 @@ db.createCollection('users', {
           description: 'User full name',
           minLength: 8
         },
-        years_old: {
-          bsonType: 'number',
-          description: 'User oldest'
-        },
         phone: {
           bsonType: 'string',
           description: 'User phone',
@@ -122,17 +118,6 @@ db.createCollection('quotes', {
 
 // Add index for 'quotes' collection
 db.quotes.createIndex({ _id: 1 }, { unique: true });
-
-// Validation Schema for 'template' collection
-db.createCollection('template', {
-  validator: {
-    $jsonSchema: {
-      bsonType: 'object',
-      title: 'Template',
-    }
-  }
-});
-
 
 // Add superuser in 'users' collection
 db.managers.insertMany([

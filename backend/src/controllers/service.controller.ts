@@ -39,7 +39,7 @@ export const updateService = async (req:Request, res: Response) => {
 export const newService = async  (req:Request, res: Response) => {
 
   const { name, price, time, discount } = req.body;
-  const service = new serviceModel({ name, price, time, discount });
+  const service = new serviceModel({ name, price, time, discount, created_on: (new Date()).toISOString()  });
 
   await service.save();
   res.status(201).json(service);

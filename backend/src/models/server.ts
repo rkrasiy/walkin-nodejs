@@ -1,10 +1,13 @@
 import cors from 'cors';
 import dbConnection from '../database/config';
-import express,{Application} from 'express';
+import express,{ Application } from 'express';
 import authRoutes from '../routes/auth.route';
 import userRoutes from '../routes/user.route';
 import managerRoutes from '../routes/manager.route';
 import serviceRoutes from '../routes/service.route';
+import quotesRoutes from '../routes/quote.route';
+import validateRoutes from '../routes/validate.route';
+import { validateApiKey } from '../middlewares/validate-api-key';
 
 
 class Server {
@@ -14,6 +17,8 @@ class Server {
   authPath: string;
   managerPath: string;
   servicePath: string;
+  quotesPath: string;
+  validatorPath: string;
 
   constructor() {
     this.app = express();
@@ -22,6 +27,8 @@ class Server {
     this.authPath = '/api/auth';
     this.managerPath = '/api/managers';
     this.servicePath = '/api/services';
+    this.quotesPath = '/api/quotes';
+    this.validatorPath = '/api/validate';
 
     //DataBase connection
     this.connectionDB();
@@ -47,6 +54,9 @@ class Server {
 
     //Public directory
     this.app.use( express.static('public') );
+
+    //Public directory
+    this.app.use( validateApiKey );
   }
 
   routes(){
@@ -54,6 +64,8 @@ class Server {
     this.app.use(this.usersPath, userRoutes);
     this.app.use(this.managerPath, managerRoutes);
     this.app.use(this.servicePath, serviceRoutes);
+    this.app.use(this.quotesPath, quotesRoutes);
+    this.app.use(this.validatorPath, validateRoutes);
   }
 
   listen(){

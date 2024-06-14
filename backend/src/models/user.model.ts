@@ -1,5 +1,4 @@
 import { Schema, model } from 'mongoose';
-import { Role } from '../interfaces/manager.interface';
 
 const UserSchema = new Schema({
   full_name: {
@@ -20,12 +19,14 @@ const UserSchema = new Schema({
     type: Boolean,
     default: true
   },
+  created_on: {
+    type: Date,
+    required: true,
+  },
+  notifications: {
+    type: Boolean,
+    required: [true, 'Notifications is required'],
+  }
 });
-
-UserSchema.methods.toJSON = function(){
-  const {__v, password, _id, ...user } = this.toObject();
-  user.uid = _id
-  return user;
-};
 
 export default model('User', UserSchema);
