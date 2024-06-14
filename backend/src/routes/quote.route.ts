@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
-import { isUserIdExist, isQuoteIdExist, isServiceIdExist } from '../helpers/db-validators';
+import { isUserIdExist, isQuoteIdExist, isServiceIdExist, isUniqEmail, isUniqPhone } from '../helpers/db-validators';
 import { fieldsValidator } from '../middlewares/fileds-validator';
 import { validateJWT } from '../middlewares/validate-jwt';
 import { hasPermissions } from '../middlewares/validate-role';
@@ -19,8 +19,9 @@ router.put("/:id",[
 router.post("/", [
   check('service', 'Is not valid id').isMongoId(),
   check('service').custom(isServiceIdExist),
-  check('user', 'Is not valid id').isMongoId(),
-  check('user').custom(isUserIdExist),
+  check('full_name', 'Fullname is required').not().isEmpty(),
+  check('email', 'Email is not valid').isEmail(),
+  check('phone', 'Phone is not valid').isMobilePhone('es-ES'),
   check('start').isISO8601().toDate(),
   check('end').isISO8601().toDate(),
   fieldsValidator

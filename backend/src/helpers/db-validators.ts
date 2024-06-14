@@ -3,6 +3,7 @@ import roleModel from "../models/role.model";
 import managerModel from "../models/manager.model";
 import serviceModel from "../models/service.model";
 import quotesModel from "../models/quotes.model";
+import { IUser } from "../interfaces/user.interface";
 
 export const isValidRole = async(rol = '') => {
   const isExistRole = await roleModel.findOne({ name: rol});
@@ -33,6 +34,12 @@ export const isUserIdExist = async(id = '') => {
   if(!existUserID){
     throw new Error(`ID: ${id} does't exist`)
   }
+}
+
+export const isUserExist = async(email = '', phone = '') => {
+  // Check if user exist;
+  const user = await userModel.findOne({email, phone});
+  return  user;
 }
 
 export const isManagerIdExist = async(id = '') => {

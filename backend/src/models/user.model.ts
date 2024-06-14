@@ -20,7 +20,12 @@ const UserSchema = new Schema({
     default: true
   },
   created_on: {
-    type: Date
+    type: Date,
+    required: true,
+  },
+  notifications: {
+    type: Boolean,
+    required: [true, 'Notifications is required'],
   }
 });
 

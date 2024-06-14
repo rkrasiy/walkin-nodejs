@@ -22,7 +22,7 @@ const QuotesSchema = new Schema({
   },
   state: {
     type: Boolean,
-    default: true
+    default: false
   }
 });
 

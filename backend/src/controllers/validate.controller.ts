@@ -1,23 +1,19 @@
 
 import { Response, Request } from 'express';
-import transporter from '../mailer/transporter';
+import transporter from '../services/mailer/transporter';
+import { sendMail } from '../services/mail.service';
 
 export const sendEmail = async  (req:Request, res: Response) => {
 
   const { email } = req.body;
 
-  transporter.sendMail(
-    {
-      from: process.env.ST_EMAIL,
-      to: email,
-      subject: 'User confirmation',
-      text: 'Your confirmation code is: 6 1 2 5 6 1'
-    }, (error) => {
-      if (error) {
-        res.status(400).json({error: error})
-      } else {
-        res.status(200).json({message: 'Successfule'})
-      }
-    }
-  )
-}
+  try {
+    // Send mail with defined transport object
+    await sendMail(email, 'Confirm your appointment', '<h1>Confirm your appointment</h1>In 20 June 2024 at 13:00 AM. <a href="">Confirm</a>');
+
+    res.status(200).send({ message: 'Email sent successfully' });
+  } catch (error) {
+      res.status(500).send({ message: 'Failed to send email' });
+  }
+
+ }

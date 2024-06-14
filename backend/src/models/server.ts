@@ -1,12 +1,12 @@
 import cors from 'cors';
 import dbConnection from '../database/config';
-import express,{Application} from 'express';
+import express,{ Application } from 'express';
 import authRoutes from '../routes/auth.route';
 import userRoutes from '../routes/user.route';
 import managerRoutes from '../routes/manager.route';
 import serviceRoutes from '../routes/service.route';
 import quotesRoutes from '../routes/quote.route';
-import validateRoutes from '../routes/validate.roure';
+import validateRoutes from '../routes/validate.route';
 import { validateApiKey } from '../middlewares/validate-api-key';
 
 

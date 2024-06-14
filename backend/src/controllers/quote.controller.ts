@@ -2,6 +2,10 @@
 import { Response, Request } from 'express';
 
 import quotesModel from '../models/quotes.model';
+import { isUserExist } from '../helpers/db-validators';
+import userModel from '../models/user.model';
+import { IUser } from '../interfaces/user.interface';
+import { sendMail } from '../services/mail.service';
 
 export const getQuotes = async (req:Request, res: Response) => {
   const limit = Number(req.query.limit);
@@ -38,12 +42,21 @@ export const updateQuote = async (req:Request, res: Response) => {
 
 export const newQuote = async (req:Request, res: Response) => {
 
-  const { service, fullname, email, phone, receive_notification, start, end } = req.body;
+  const { service, full_name, email, phone, receive_notification, start, end } = req.body;
 
+  let user = await isUserExist(email, phone);
+
+  if(!user){
+    console.log('Creating new user ...');
+    user = new userModel({ full_name, email, phone, created_on: (new Date()).toISOString(), notifications: receive_notification });
+    await user.save();
+  }
   
-  const quote = new quotesModel({ service, fullname, start, end, created_on: (new Date()).toISOString() });
+  const quote = new quotesModel({ service, user: user.id, start, end, created_on: (new Date()).toISOString() });
 
   await quote.save();
+  await sendMail(email, 'Confirm you appointment', `${quote.id} and user: ${user.id}`)
+  
   res.status(201).json(quote);
 }
 
