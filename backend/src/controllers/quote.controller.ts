@@ -2,10 +2,9 @@
 import { Response, Request } from 'express';
 
 import quotesModel from '../models/quotes.model';
-import { isUserExist } from '../helpers/db-validators';
 import userModel from '../models/user.model';
-import { IUser } from '../interfaces/user.interface';
 import { sendMail } from '../services/mail.service';
+import { generateConfirmationToken } from '../helpers/utils';
 
 export const getQuotes = async (req:Request, res: Response) => {
   const limit = Number(req.query.limit);
@@ -42,22 +41,47 @@ export const updateQuote = async (req:Request, res: Response) => {
 
 export const newQuote = async (req:Request, res: Response) => {
 
-  const { service, full_name, email, phone, receive_notification, start, end } = req.body;
+  try{
+    const { service, full_name, email, phone, receive_notification, start, end } = req.body;
 
-  let user = await isUserExist(email, phone);
+    let user = await userModel.findOne({email: email, phone: phone});
 
-  if(!user){
-    console.log('Creating new user ...');
-    user = new userModel({ full_name, email, phone, created_on: (new Date()).toISOString(), notifications: receive_notification });
-    await user.save();
+    // Generate confirmation token
+    const confirmationToken = generateConfirmationToken();
+  
+    if(!user){
+      console.log('Creating new user ...');
+      user = new userModel({ full_name, email, phone, created_on: (new Date()).toISOString(), notifications: receive_notification });
+      await user.save();
+    }
+    
+    const quote = new quotesModel({ 
+      service, 
+      user: user.id, 
+      start: new Date(start), 
+      end: new Date(end), 
+      created_on: (new Date()).toISOString(),
+      confirmationToken
+    });
+  
+    await quote.save();
+
+
+    // Send confirmation email
+    const confirmationUrl = `http://localhost/confirm-appointment?token=${confirmationToken}`;
+
+    const emailHtml = `
+      <p>Dear ${full_name},</p>
+      <p>Your appointment is scheduled for ${start}.</p>
+      <p>Please confirm your appointment by clicking the link below:</p>
+      <a href="${confirmationUrl}" style='padding: 1em;background-color:#00bd13;color:white;border-radius: .5em;text-decoration:unset;'>Confirm appointment</a>`;
+
+    await sendMail(email, 'Appointment Confirmation', `Dear ${full_name}, please confirm your appointment.`, emailHtml)
+    
+    res.status(200).json(quote);
+  }catch (err) {
+    res.status(500).send('Error: ' + err);
   }
-  
-  const quote = new quotesModel({ service, user: user.id, start, end, created_on: (new Date()).toISOString() });
-
-  await quote.save();
-  await sendMail(email, 'Confirm you appointment', `${quote.id} and user: ${user.id}`)
-  
-  res.status(201).json(quote);
 }
 
 export const removeQuote = async (req:Request, res: Response) => {

@@ -36,12 +36,6 @@ export const isUserIdExist = async(id = '') => {
   }
 }
 
-export const isUserExist = async(email = '', phone = '') => {
-  // Check if user exist;
-  const user = await userModel.findOne({email, phone});
-  return  user;
-}
-
 export const isManagerIdExist = async(id = '') => {
   // Check if email exist;
   const existUserID = await managerModel.findById(id);
