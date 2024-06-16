@@ -22,7 +22,16 @@ const QuotesSchema = new Schema({
   },
   state: {
     type: Boolean,
-    default: false
+    default: true
+  },
+  confirmed: {
+    type: Boolean,
+    default: false,
+  },
+  confirmationToken: {
+    type: String,
+    required: true,
+    unique: true
   }
 });
 
