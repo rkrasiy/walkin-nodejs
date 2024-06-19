@@ -28,57 +28,83 @@ export const getQuotes = async (req:Request, res: Response) => {
   })
 }
 
-export const updateQuote = async (req:Request, res: Response) => {
-
-  const { id } = req.params;
-  const { _id, ...rest} = req.body;
-
-  //TODO : validate userID
-  const quote = await quotesModel.findByIdAndUpdate(id, rest, { new: true });
-
-  res.json(quote);
-}
-
 export const newQuote = async (req:Request, res: Response) => {
 
   try{
     const { service, full_name, email, phone, receive_notification, start, end } = req.body;
 
     let user = await userModel.findOne({email: email, phone: phone});
-
-    // Generate confirmation token
-    const confirmationToken = generateConfirmationToken();
+ 
+    //Check if user exist
+    if(user){
+      const current = new Date();
+      current.setUTCHours(0, 0, 0, 0);
   
-    if(!user){
-      console.log('Creating new user ...');
+      //Check if user has any future appointments
+      const userQuotes = await quotesModel.find({
+        start: {
+          $gte: start,
+        },
+      });
+  
+      //It is not allowed to make new appointments if there is already one.
+      if(userQuotes.length > 0){
+        res.status(409).json(userQuotes)
+      }
+
+    }else{
       user = new userModel({ full_name, email, phone, created_on: (new Date()).toISOString(), notifications: receive_notification });
       await user.save();
+      console.log('New user has been created.');
     }
+
+    // Generate confirmation token
+    const token = generateConfirmationToken();
+    const dateStart = new Date(start);
+    const dateEnd = new Date(end);
     
-    const quote = new quotesModel({ 
+    const newQuote = new quotesModel({ 
       service, 
       user: user.id, 
-      start: new Date(start), 
-      end: new Date(end), 
+      start: dateStart.toISOString(), 
+      end: dateEnd.toISOString(), 
       created_on: (new Date()).toISOString(),
-      confirmationToken
+      confirmationToken: token
     });
   
-    await quote.save();
+    await newQuote.save();
 
 
     // Send confirmation email
-    const confirmationUrl = `http://localhost/confirm-appointment?token=${confirmationToken}`;
+    const confirmationUrl = `http://localhost/api/confirm-appointment?token=${token}`;
+
+    const timeFormat: Intl.DateTimeFormatOptions = { 
+      month: 'numeric',
+      day: '2-digit', 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      hour12: false, 
+      timeZoneName: 'short', 
+      timeZone: 'UTC' 
+    }
 
     const emailHtml = `
       <p>Dear ${full_name},</p>
-      <p>Your appointment is scheduled for ${start}.</p>
+      <p>Your appointment is scheduled for ${dateStart.toLocaleDateString(undefined, timeFormat)}.</p>
       <p>Please confirm your appointment by clicking the link below:</p>
-      <a href="${confirmationUrl}" style='padding: 1em;background-color:#00bd13;color:white;border-radius: .5em;text-decoration:unset;'>Confirm appointment</a>`;
+      <a href="${confirmationUrl}" style='padding: 1em;background-color:#00bd13;color:white;border-radius: .5em;text-decoration:unset;margin: 1em auto;'>Confirm appointment</a>`;
 
-    await sendMail(email, 'Appointment Confirmation', `Dear ${full_name}, please confirm your appointment.`, emailHtml)
+    await sendMail(
+      email, 
+      'Appointment Confirmation', 
+      `Dear ${full_name}, please confirm your appointment.`, 
+      emailHtml
+    )
     
+    const { confirmationToken, ...quote} = newQuote;
+
     res.status(200).json(quote);
+
   }catch (err) {
     res.status(500).send('Error: ' + err);
   }
