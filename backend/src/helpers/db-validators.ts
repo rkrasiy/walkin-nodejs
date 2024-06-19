@@ -3,7 +3,6 @@ import roleModel from "../models/role.model";
 import managerModel from "../models/manager.model";
 import serviceModel from "../models/service.model";
 import quotesModel from "../models/quotes.model";
-import { IUser } from "../interfaces/user.interface";
 
 export const isValidRole = async(rol = '') => {
   const isExistRole = await roleModel.findOne({ name: rol});

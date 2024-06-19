@@ -20,10 +20,6 @@ const QuotesSchema = new Schema({
   created_on: {
     type: Date
   },
-  state: {
-    type: Boolean,
-    default: true
-  },
   confirmed: {
     type: Boolean,
     default: false,
@@ -34,5 +30,10 @@ const QuotesSchema = new Schema({
     unique: true
   }
 });
+
+QuotesSchema.methods.toJSON = function(){
+  const {__v, confirmationToken, ...quote } = this.toObject();
+  return quote;
+};
 
 export default model('Quote', QuotesSchema);

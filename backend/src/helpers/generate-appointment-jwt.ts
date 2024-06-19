@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 
-const generateJWT = async ( uid = '') => {
+const generateAppointmentJWT = async ( uid = '') => {
 
   return new Promise( (resolve, reject) => {
     const payload = { uid };
 
     jwt.sign( payload, process.env.SECRETORPRIVATEKEY!, {
-      expiresIn: '8h'
+      expiresIn: '300000'
     }, (err, token) => {
       if(err){
         console.log(err)
@@ -21,4 +21,4 @@ const generateJWT = async ( uid = '') => {
 
 };
 
-export default generateJWT;
+export default generateAppointmentJWT;

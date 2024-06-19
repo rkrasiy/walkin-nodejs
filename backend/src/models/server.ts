@@ -1,14 +1,14 @@
 import cors from 'cors';
 import dbConnection from '../database/config';
 import express,{ Application } from 'express';
-import authRoutes from '../routes/auth.route';
-import userRoutes from '../routes/user.route';
-import managerRoutes from '../routes/manager.route';
-import serviceRoutes from '../routes/service.route';
-import quotesRoutes from '../routes/quote.route';
-import confirmAppointmentRoutes from '../routes/confirm-appointments.route';
-import { validateApiKey } from '../middlewares/validate-api-key';
-
+import cron from 'node-cron';
+import authRoutes from '../routes/auth.routes';
+import userRoutes from '../routes/user.routes';
+import managerRoutes from '../routes/manager.routes';
+import serviceRoutes from '../routes/service.routes';
+import quotesRoutes from '../routes/quote.routes';
+import appointmentsRoutes from '../routes/appointments.routes';
+import quotesModel from './quotes.model';
 
 class Server {
   app: Application;
@@ -18,7 +18,7 @@ class Server {
   managerPath: string;
   servicePath: string;
   quotesPath: string;
-  confirmAppointmentPath: string;
+  appointmentsPath: string;
 
   constructor() {
     this.app = express();
@@ -28,7 +28,7 @@ class Server {
     this.managerPath = '/api/managers';
     this.servicePath = '/api/services';
     this.quotesPath = '/api/quotes';
-    this.confirmAppointmentPath = '/api/confirm-appointment';
+    this.appointmentsPath = '/api/appointments';
 
     //DataBase connection
     this.connectionDB();
@@ -38,6 +38,9 @@ class Server {
 
     //App router
     this.routes();
+
+    // Run unconfirmed quotes
+    this.scheduleCronJob();
   }
 
   async connectionDB(){
@@ -54,9 +57,6 @@ class Server {
 
     //Public directory
     this.app.use( express.static('public') );
-
-    //Public directory
-    this.app.use( validateApiKey );
   }
 
   routes(){
@@ -65,7 +65,21 @@ class Server {
     this.app.use(this.managerPath, managerRoutes);
     this.app.use(this.servicePath, serviceRoutes);
     this.app.use(this.quotesPath, quotesRoutes);
-    this.app.use(this.confirmAppointmentPath, confirmAppointmentRoutes);
+    this.app.use(this.appointmentsPath, appointmentsRoutes);
+  }
+
+  scheduleCronJob() {
+    cron.schedule('*/1 * * * *', async () => {
+      const expirationTime = new Date(Date.now() - 5 * 60 * 1000); // 5 minutes ago
+
+      try {
+        //Delete expired unconfirmed appointments.
+        await quotesModel.deleteMany({ confirmed: false, created_on: { $lt: expirationTime } });
+        
+      } catch (error) {
+        console.error('Error deleting expired unconfirmed appointments:', error);
+      }
+    });
   }
 
   listen(){

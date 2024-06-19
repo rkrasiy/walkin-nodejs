@@ -1,20 +1,14 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
-import { isUserIdExist, isQuoteIdExist, isServiceIdExist, isUniqEmail, isUniqPhone } from '../helpers/db-validators';
+import { isQuoteIdExist, isServiceIdExist } from '../helpers/db-validators';
 import { fieldsValidator } from '../middlewares/fileds-validator';
 import { validateJWT } from '../middlewares/validate-jwt';
 import { hasPermissions } from '../middlewares/validate-role';
-import { getQuotes, newQuote, removeQuote, updateQuote } from '../controllers/quote.controller';
+import { getQuotes, newQuote, removeQuote } from '../controllers/quote.controller';
 
 const router = Router();
 
 router.get("/", getQuotes);
-
-router.put("/:id",[
-  check('id', 'Is not valid id').isMongoId(),
-  check('id').custom(isQuoteIdExist),
-  fieldsValidator
-], updateQuote);
 
 router.post("/", [
   check('service', 'Is not valid id').isMongoId(),
