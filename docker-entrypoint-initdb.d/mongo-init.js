@@ -48,9 +48,9 @@ db.createCollection('users', {
     $jsonSchema: {
       bsonType: 'object',
       title: 'User',
-      required: ['full_name', 'phone', 'email', 'years_old', 'state'],
+      required: ['fullName', 'phone', 'email', 'years_old', 'state'],
       properties: {
-        full_name: {
+        fullName: {
           bsonType: 'string',
           description: 'User full name',
           minLength: 8

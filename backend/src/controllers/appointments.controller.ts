@@ -26,6 +26,10 @@ export const getAppointments = async (req:Request, res: Response) => {
     },
   }
 
+  if(req.query.id){
+    Object.assign(query, {user: req.query.id})
+  }
+
   const [total, appointments] = await Promise.all([
     quotesModel.countDocuments(query),
     quotesModel.find(query)
@@ -42,7 +46,7 @@ export const getAppointments = async (req:Request, res: Response) => {
 export const newAppointment = async (req:Request, res: Response) => {
 
   try{
-    const { service, user, full_name, email, start, end } = req.body;
+    const { service, user, fullName, email, start, end } = req.body;
  
     // Generate confirmation token
     const token = generateConfirmationToken();
@@ -64,7 +68,7 @@ export const newAppointment = async (req:Request, res: Response) => {
     sendConfirmationEmail({
       email,
       date: dateStart,
-      full_name,
+      fullName,
       token
     });
     const { confirmationToken, ...quote} = newQuote;
@@ -76,7 +80,7 @@ export const newAppointment = async (req:Request, res: Response) => {
 
 export const userChecking = async (req:Request, res: Response) => {
   try{
-    const { service, full_name, email, phone, receive_notification } = req.body;
+    const { service, fullName, email, phone, receiveNotification } = req.body;
 
     let user = await userModel.findOne({email: email });
  
@@ -93,22 +97,18 @@ export const userChecking = async (req:Request, res: Response) => {
         },
       });
   
-      //It is not allowed to make new appointments if there is already one.
+      //Won't be allowed to make new appointments if there is already one.
       if(userQuotes.length > 0){
         res.status(409).json(userQuotes)
       }
 
     }else{
-      user = new userModel({ full_name, email, phone, created_on: (new Date()).toISOString(), notifications: receive_notification });
+      user = new userModel({ fullName, email, phone, created_on: (new Date()).toISOString(), notifications: receiveNotification });
       await user.save();
       console.log('New user has been created.');
     }
 
-    // Generate JWT
-    const token = await generateAppointmentJWT( user.id );
-
     res.status(200).json({
-      token,
       uid: user.id
     });
 
@@ -126,7 +126,7 @@ export const userChecking = async (req:Request, res: Response) => {
   }
 }
 
-async function sendConfirmationEmail({email, token, full_name, date}: {email: string, token: string, full_name: string, date: Date}){
+async function sendConfirmationEmail({email, token, fullName, date}: {email: string, token: string, fullName: string, date: Date}){
   const confirmationUrl = `http://localhost/api/confirm-appointment?token=${token}`;
 
   const timeFormat: Intl.DateTimeFormatOptions = { 
@@ -140,7 +140,7 @@ async function sendConfirmationEmail({email, token, full_name, date}: {email: st
   }
 
   const emailHtml = `
-    <p>Dear ${full_name},</p>
+    <p>Dear ${fullName},</p>
     <p>Your appointment is scheduled for ${date.toLocaleDateString(undefined, timeFormat)}.</p>
     <p>Please confirm your appointment by clicking the link below:</p>
     <a href="${confirmationUrl}" style='padding: 1em;background-color:#00bd13;color:white;border-radius: .5em;text-decoration:unset;margin: 1em auto;'>Confirm appointment</a>`;
@@ -148,7 +148,7 @@ async function sendConfirmationEmail({email, token, full_name, date}: {email: st
   await sendMail(
     email, 
     'Appointment Confirmation', 
-    `Dear ${full_name}, please confirm your appointment.`, 
+    `Dear ${fullName}, please confirm your appointment.`, 
     emailHtml
   );
 }

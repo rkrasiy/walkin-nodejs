@@ -31,7 +31,7 @@ export const getQuotes = async (req:Request, res: Response) => {
 export const newQuote = async (req:Request, res: Response) => {
 
   try{
-    const { service, full_name, email, phone, receive_notification, start, end } = req.body;
+    const { service, fullName, email, phone, receiveNotification, start, end } = req.body;
 
     let user = await userModel.findOne({email: email, phone: phone});
  
@@ -53,7 +53,7 @@ export const newQuote = async (req:Request, res: Response) => {
       }
 
     }else{
-      user = new userModel({ full_name, email, phone, created_on: (new Date()).toISOString(), notifications: receive_notification });
+      user = new userModel({ fullName, email, phone, created_on: (new Date()).toISOString(), notifications: receiveNotification });
       await user.save();
       console.log('New user has been created.');
     }
@@ -89,7 +89,7 @@ export const newQuote = async (req:Request, res: Response) => {
     }
 
     const emailHtml = `
-      <p>Dear ${full_name},</p>
+      <p>Dear ${fullName},</p>
       <p>Your appointment is scheduled for ${dateStart.toLocaleDateString(undefined, timeFormat)}.</p>
       <p>Please confirm your appointment by clicking the link below:</p>
       <a href="${confirmationUrl}" style='padding: 1em;background-color:#00bd13;color:white;border-radius: .5em;text-decoration:unset;margin: 1em auto;'>Confirm appointment</a>`;
@@ -97,7 +97,7 @@ export const newQuote = async (req:Request, res: Response) => {
     await sendMail(
       email, 
       'Appointment Confirmation', 
-      `Dear ${full_name}, please confirm your appointment.`, 
+      `Dear ${fullName}, please confirm your appointment.`, 
       emailHtml
     )
     
