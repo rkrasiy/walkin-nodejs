@@ -25,6 +25,14 @@ export const getUsers = async (req:Request, res: Response) => {
   })
 }
 
+export const getUser = async (req:Request, res: Response) => {
+  const { id } = req.params;
+
+  const user = await userModel.findById(id);
+  
+  res.json(user);
+}
+
 export const updateUsers = async (req:Request, res: Response) => {
 
   const { id } = req.params;
@@ -38,8 +46,8 @@ export const updateUsers = async (req:Request, res: Response) => {
 
 export const newUser = async  (req:Request, res: Response) => {
 
-  const { full_name, email, phone, notifications } = req.body;
-  const user = new userModel({ full_name, email, phone, created_on: (new Date()).toISOString(), notifications });
+  const { fullName, email, phone, notifications } = req.body;
+  const user = new userModel({ fullName, email, phone, created_on: (new Date()).toISOString(), notifications });
 
   await user.save();
   res.status(201).json(user);

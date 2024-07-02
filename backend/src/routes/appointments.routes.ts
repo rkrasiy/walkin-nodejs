@@ -17,21 +17,20 @@ router.get("/", [
 router.post("/user-validation", [
   check('service', 'Is not valid id').isMongoId(),
   check('service').custom(isServiceIdExist),
-  check('full_name', 'Fullname is required').not().isEmpty(),
+  check('fullName', 'Fullname is required').not().isEmpty(),
   check('email', 'Email is not valid').isEmail(),
-  check('phone', 'Phone is not valid').isMobilePhone('es-ES'),
-  check('receive_notification', 'Receive notification is required').not().isEmpty(),
+  check('phone', 'Phone is not valid').not().isEmpty(),
+  check('receiveNotification', 'Receive notification is required').not().isEmpty(),
   fieldsValidator
 ], userChecking)
 
 //Route for create an appointment
 router.post("/", [
-  validateJWT,
   check('service', 'Is not valid id').isMongoId(),
   check('service').custom(isServiceIdExist),
   check('user', 'Is not valid id').isMongoId(),
   check('user').custom(isUserIdExist),
-  check('full_name', 'Fullname is required').not().isEmpty(),
+  check('fullName', 'Fullname is required').not().isEmpty(),
   check('email', 'Email is not valid').isEmail(),
   check('phone', 'Phone is not valid').isMobilePhone('es-ES'),
   check('start').isISO8601().toDate(),
