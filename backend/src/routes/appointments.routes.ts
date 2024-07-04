@@ -3,15 +3,19 @@ import { check } from 'express-validator';
 import { isServiceIdExist, isUserIdExist } from '../helpers/db-validators';
 import { fieldsValidator } from '../middlewares/fileds-validator';
 import { confirmAppointment, getAppointments, newAppointment, userChecking } from '../controllers/appointments.controller';
-import { validateJWT } from '../middlewares/validate-jwt';
+import { getUser } from '../controllers/user.controller';
 
 const router = Router();
 
 router.get("/confirm-appointment", confirmAppointment);
 
-router.get("/", [
-  validateJWT
-], getAppointments);
+router.get("/:id",[
+  check('id', 'Is not valid id').isMongoId(),
+  check('id').custom(isUserIdExist),
+  fieldsValidator
+], getUser);
+
+router.get("/", getAppointments);
 
 //Route for checking a user. If doesn't exist it will create, else it will return token.
 router.post("/user-validation", [

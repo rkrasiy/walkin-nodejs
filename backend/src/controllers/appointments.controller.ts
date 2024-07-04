@@ -30,17 +30,11 @@ export const getAppointments = async (req:Request, res: Response) => {
     Object.assign(query, {user: req.query.id})
   }
 
-  const [total, appointments] = await Promise.all([
-    quotesModel.countDocuments(query),
-    quotesModel.find(query)
-      .skip(_offset)
-      .limit(_limit)
-  ]);
+  const appointments = await quotesModel.find(query);
 
-  res.json({
-    total,
-    items: appointments
-  })
+  const data = appointments.map(appointment => {return {start: appointment.start, end: appointment.end}})
+
+  res.json(data);
 }
 
 export const newAppointment = async (req:Request, res: Response) => {
@@ -83,7 +77,7 @@ export const userChecking = async (req:Request, res: Response) => {
     const { service, fullName, email, phone, receiveNotification } = req.body;
 
     let user = await userModel.findOne({email: email });
- 
+
     //Check if user exist
     if(user){
       const current = new Date();
@@ -99,7 +93,7 @@ export const userChecking = async (req:Request, res: Response) => {
   
       //Won't be allowed to make new appointments if there is already one.
       if(userQuotes.length > 0){
-        res.status(409).json(userQuotes)
+        res.status(200).json({appointments: userQuotes});
       }
 
     }else{
@@ -108,9 +102,7 @@ export const userChecking = async (req:Request, res: Response) => {
       console.log('New user has been created.');
     }
 
-    res.status(200).json({
-      uid: user.id
-    });
+    res.status(200).json({uid: user._id});
 
   }catch (err) {
     const error = err as Error;
