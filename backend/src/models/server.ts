@@ -22,7 +22,7 @@ class Server {
 
   constructor() {
     this.app = express();
-    this.port = '6500';
+    this.port = '9080';
     this.usersPath = '/api/users';
     this.authPath = '/api/auth';
     this.managerPath = '/api/managers';

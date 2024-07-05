@@ -122,15 +122,14 @@ db.quotes.createIndex({ _id: 1 }, { unique: true });
 // Add superuser in 'users' collection
 db.managers.insertMany([
   {
-     email: 'admin@admin.es',
-     // Default password: admin
-     password: '$2a$12$npf89psKjdvqWscAMu89Tu6Ax3JruSFWZQrbVhSQXNAfxs9JE8SDe',
-     name: 'Administrator',
-     surname: 'Main',
-     state: true
+    email: 'admin@admin.es',
+    // Default password: admin
+    password: '$2a$12$npf89psKjdvqWscAMu89Tu6Ax3JruSFWZQrbVhSQXNAfxs9JE8SDe',
+    name: 'Administrator',
+    surname: 'Main',
+    state: true
    }  
  ]);
 
-
- print('END #################################################################');
+print('END #################################################################');
 

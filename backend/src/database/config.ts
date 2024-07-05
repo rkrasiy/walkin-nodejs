@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const dbConnection = async()=>{
   try{
-    await mongoose.connect(`mongodb://${process.env.DB_ADMIN_USERNAME}:${process.env.DB_ADMIN_USERPASS}@st-database/`,
+    await mongoose.connect(`mongodb://${process.env.DB_ADMIN_USERNAME}:${process.env.DB_ADMIN_USERPASS}@schd-database/`,
       { 
         dbName: 'schedule-track'
       }
