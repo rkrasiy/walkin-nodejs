@@ -13,6 +13,7 @@ import quotesModel from './quotes.model';
 class Server {
   app: Application;
   port: string;
+  conection: any;
   usersPath: string;
   authPath: string;
   managerPath: string;
@@ -57,6 +58,9 @@ class Server {
 
     //Public directory
     this.app.use( express.static('public') );
+
+    // Middleware to set dbName from header and switch database
+    // this.app.use(switchDatabase(this.conection));
   }
 
   routes(){
