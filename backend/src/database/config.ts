@@ -1,15 +1,20 @@
-import mongoose from "mongoose";
+import mongoose, { Connection, Schema } from "mongoose";
 
-const dbConnection = async()=>{
+const tenantIdToConnection:Record<string, Connection> = {};
+
+const dbConnection = async(databaseName: string, modelName: string, schema: Schema)=>{
   try{
-    await mongoose.connect(process.env.MONGODB_URL!,{
-      dbName: 'schedule-track'
-    });
 
-    console.log('Has been connected to: ');
+    if(!tenantIdToConnection[databaseName]){
+      tenantIdToConnection[databaseName] = await mongoose.createConnection(process.env.MONGODB_URL!, {
+        dbName: databaseName
+      }).asPromise();
+    }
+    
+    return tenantIdToConnection[databaseName].model(modelName, schema);
+
   }catch(err){
-    console.log(err)
-    throw new Error('Error a la hora de iniciar la base de datos');
+    throw new Error('Database doesn\'t exist');
   }
 }
 
