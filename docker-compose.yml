@@ -12,17 +12,6 @@ services:
       - "80:80"
       - "443:443"
 
-  schd-frontend:
-    container_name: schd-frontend
-    build: 
-      dockerfile: Dockerfile
-      context: ./front-end
-    restart: always
-    command: ["sh", "-c", "yarn && yarn dev"]
-    working_dir: /app
-    volumes:
-      - ./front-end:/app
-
   schd-backend:
     container_name: schd-backend
     image: node:20
