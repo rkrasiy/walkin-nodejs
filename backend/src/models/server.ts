@@ -42,7 +42,7 @@ class Server {
     this.routes();
 
     // Run unconfirmed quotes
-    this.scheduleCronJob();
+    // this.scheduleCronJob();
   }
 
   // async connectionDB(){
@@ -73,19 +73,19 @@ class Server {
     this.app.use(this.appointmentsPath, appointmentsRoutes);
   }
 
-  scheduleCronJob() {
-    cron.schedule('*/1 * * * *', async () => {
-      const expirationTime = new Date(Date.now() - 5 * 60 * 1000); // 5 minutes ago
+  // scheduleCronJob() {
+  //   cron.schedule('*/1 * * * *', async () => {
+  //     const expirationTime = new Date(Date.now() - 5 * 60 * 1000); // 5 minutes ago
 
-      try {
-        //Delete expired unconfirmed appointments.
-        await quotesModel.deleteMany({ confirmed: false, created_on: { $lt: expirationTime } });
+  //     try {
+  //       //Delete expired unconfirmed appointments.
+  //       await quotesModel.deleteMany({ confirmed: false, created_on: { $lt: expirationTime } });
         
-      } catch (error) {
-        console.error('Error deleting expired unconfirmed appointments:', error);
-      }
-    });
-  }
+  //     } catch (error) {
+  //       console.error('Error deleting expired unconfirmed appointments:', error);
+  //     }
+  //   });
+  // }
 
   listen(){
     this.app.listen(this.port, () => {
