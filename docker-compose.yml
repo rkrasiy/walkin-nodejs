@@ -14,7 +14,6 @@ services:
 
   schd-frontend:
     container_name: schd-frontend
-    image: schd-frontend-local
     build: 
       dockerfile: Dockerfile
       context: ./front-end
