@@ -9,6 +9,7 @@ import serviceRoutes from '../routes/service.routes';
 import quotesRoutes from '../routes/quote.routes';
 import appointmentsRoutes from '../routes/appointments.routes';
 import quotesModel from './quotes.model';
+import { switchDatabase } from '../middlewares/switch-databse';
 
 class Server {
   app: Application;
@@ -31,8 +32,8 @@ class Server {
     this.quotesPath = '/api/quotes';
     this.appointmentsPath = '/api/appointments';
 
-    //DataBase connection
-    this.connectionDB();
+    // //DataBase connection
+    // this.connectionDB();
 
     //Middlewears
     this.middlewears();
@@ -44,9 +45,9 @@ class Server {
     this.scheduleCronJob();
   }
 
-  async connectionDB(){
-    await dbConnection();
-  }
+  // async connectionDB(){
+  //   await dbConnection();
+  // }
 
   middlewears(){
 
@@ -60,7 +61,7 @@ class Server {
     this.app.use( express.static('public') );
 
     // Middleware to set dbName from header and switch database
-    // this.app.use(switchDatabase(this.conection));
+    // this.app.use(switchDatabase);
   }
 
   routes(){
