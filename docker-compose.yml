@@ -37,15 +37,18 @@ services:
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - schd-database:/data/db
-
-  schd-database_manager:
-    container_name: schd-database_manager
-    image: mongo-express
-    restart: always
+    
     ports:
-      - 9081:8081
-    environment:
-      - ME_CONFIG_MONGODB_URL=mongodb://${DB_ADMIN_USERNAME}:${DB_ADMIN_USERPASS}@schd-database:27017/?authSource=admin
+      - 15088:27017
+
+  # schd-ddb-manager:
+  #   container_name: schd-db-manager
+  #   image: mongo-express
+  #   restart: always
+  #   ports:
+  #     - 19081:8081
+  #   environment:
+  #     - ME_CONFIG_MONGODB_URL=mongodb://${DB_ADMIN_USERNAME}:${DB_ADMIN_USERPASS}@schd-database:27017/?authSource=admin
 
 volumes:
   schd-database:
