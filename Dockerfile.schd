@@ -1,0 +1,25 @@
+# Used for local development
+#
+#   docker build -t localhost:5000/udo-notifier-frontend-local -f Dockerfile.local .
+#   docker run --rm -it --name udo-frontend-local -v `pwd`:/app -p 3000:3000  localhost:5000/udo-notifier-frontend-local ash
+#
+FROM node:20
+
+# Mongo Admin User
+ENV DB_ADMIN_USERNAME=root
+# Mongo Admin Password
+ENV DB_ADMIN_USERPASS=232BDF3412309454s87301RT
+# Database name
+ENV DB_NAME=schedule
+# SECRET JWT HS256
+ENV BACKEND_AUTH_LOCAL_SECRET=10208b7b-8b97-42e5-8dc2-f69472e7b81e
+# Debug Mode
+ENV BACKEND_DEBUGGER=off
+ENV BACKEND_DEBUGGER_PORT=8002
+ENV META_CONF=dZC4ZA-WFktXvnBf4Z2wKrYX9kbCLz4gfwu6d-fNpoE=
+
+WORKDIR /app
+RUN NODE_ENV=production npm && npm build
+RUN pip install -r requirements/base.pip && rm -rf requirements
+
+CMD ["tsc"]
