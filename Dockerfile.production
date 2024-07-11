@@ -33,6 +33,7 @@ RUN apk add --no-cache nginx
 RUN mkdir -p /var/www/schd-planner
 COPY --from=builder-api /app/dist/ /var/www/schd-planner
 COPY docker-entrypoint.nginx.sh /
+RUN chmod +x /docker-entrypoint.nginx.sh
 COPY proxy/production.conf /etc/nginx/http.d/default.conf
 
 # Expose ports
