@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  schd-backend:
+    container_name: schd-backend
+    image: node:20
+    build: 
+      context: ./backend
+    restart: always
+    command:
+      ["sh", "-c", "npm install && npm start"]
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./.env
+
+  schd-database:
+    container_name: schd-database
+    image: mongo:4.2.24-bionic
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_ADMIN_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_ADMIN_USERPASS}
+      - MONGO_INITDB_DATABASE=schedule_track
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - schd-database:/data/db
+    
+    ports:
+      - 15088:27017
+volumes:
+  schd-database:
+
+networks:
+  default:
