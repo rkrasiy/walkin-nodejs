@@ -14,9 +14,7 @@ services:
       - ./backend:/app
     env_file:
       - ./.env
-    ports:
-      '8080':'9080'
-      
+
   schd-database:
     container_name: schd-database
     image: mongo:4.2.24-bionic
