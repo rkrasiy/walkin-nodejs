@@ -15,10 +15,12 @@ ENV META_CONF=dZC4ZA-WFktXvnBf4Z2wKrYX9kbCLz4gfwu6d-fNpoE=
 # Set working directory
 WORKDIR /app
 
+
+# Copy application code
 COPY backend .
 
 # Install dependencies and build the application
-RUN NODE_ENV=production npm install && npm run build
+RUN npm && npm run build
 
 
 # Stage 2: Setup Nginx and Final Image
