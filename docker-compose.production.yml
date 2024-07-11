@@ -5,13 +5,9 @@ services:
     container_name: schd-backend
     image: node:20
     build: 
-      context: ./backend
+      dockerfile: Dockerfile.production
+      context: .
     restart: always
-    command:
-      ["sh", "-c", "npm install && npm start"]
-    working_dir: /app
-    volumes:
-      - ./backend:/app
     env_file:
       - ./.env
 

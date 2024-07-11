@@ -1,0 +1,40 @@
+
+# Stage 1: Build the Node.js application
+FROM node:20.2.0-alpine3.17 as builder-api
+
+# Set environment variables
+ENV DB_ADMIN_USERNAME=root
+ENV DB_ADMIN_USERPASS=232BDF3412309454s87301RT
+ENV DB_NAME=udo-notifier
+ENV BACKEND_AUTH_LOCAL_SECRET=10208b7b-8b97-42e5-8dc2-f69472e7b81e
+ENV BACKEND_DEBUGGER=off
+ENV BACKEND_DEBUGGER_PORT=8002
+ENV META_CONF=dZC4ZA-WFktXvnBf4Z2wKrYX9kbCLz4gfwu6d-fNpoE=
+
+
+# Set working directory
+WORKDIR /app
+
+# Install dependencies and build the application
+RUN NODE_ENV=production npm install && npm run build
+
+
+# Stage 2: Setup Nginx and Final Image
+FROM node:20.2.0-alpine3.17
+
+# Install Nginx
+RUN apk add --no-cache nginx
+
+# Create directories and copy necessary files
+RUN mkdir -p /var/www/schd-planner
+COPY --from=builder-api /app/dist/ /var/www/schd-planner
+COPY docker-entrypoint.nginx.sh /
+COPY proxy/production.conf /etc/nginx/http.d/default.conf
+
+# Expose ports
+EXPOSE 80
+
+
+# Set entrypoint and default command
+ENTRYPOINT ["/docker-entrypoint.nginx.sh"]
+CMD ["node", "/app/index.js"]
