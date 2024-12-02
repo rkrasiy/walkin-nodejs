@@ -1,8 +1,6 @@
-version: "3"
-
 services:
-  schd-proxy:
-    container_name: schd-proxy
+  walkin-proxy:
+    container_name: walkin-proxy
     image: nginx:1.24.0
     restart: always
     volumes:
@@ -12,31 +10,44 @@ services:
       - "80:80"
       - "443:443"
 
-  schd-backend:
-    container_name: schd-backend
+  walkin-dashboard:
+    container_name: dashboard
+    image: localhost:5000/walkin-dashboard
+    build:
+      dockerfile: Dockerfile.local
+      context: ./dashboard
+    restart: always
+    command:
+      ['ash', '-c', 'npm i && npm run dev']
+    working_dir: /app
+    volumes:
+      - ./dashboard:/app
+
+  walkin-api:
+    container_name: walkin-api
     image: node:20
     build: 
-      context: ./backend
+      context: ./api
     restart: always
     command:
       ["sh", "-c", "npm install && npm start"]
     working_dir: /app
     volumes:
-      - ./backend:/app
+      - ./api:/app
     env_file:
       - ./.env
 
-  schd-database:
-    container_name: schd-database
+  walkin-database:
+    container_name: walkin-database
     image: mongo:4.2.24-bionic
     restart: always
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${DB_ADMIN_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${DB_ADMIN_USERPASS}
-      - MONGO_INITDB_DATABASE=schedule_track
+      - MONGO_INITDB_DATABASE=walkin-database
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-      - schd-database:/data/db
+      - walkin-database:/data/db
     
     ports:
       - 15088:27017
@@ -51,7 +62,7 @@ services:
   #     - ME_CONFIG_MONGODB_URL=mongodb://${DB_ADMIN_USERNAME}:${DB_ADMIN_USERPASS}@schd-database:27017/?authSource=admin
 
 volumes:
-  schd-database:
+  walkin-database:
 
 networks:
   default:
